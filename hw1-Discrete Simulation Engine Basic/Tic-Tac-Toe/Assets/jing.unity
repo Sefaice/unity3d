@@ -153,7 +153,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91d4f67dbce33a541b67fff66506b589, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  yosimite: {fileID: 0}
+  imgPlayer1: {fileID: 2800000, guid: 55ee2b9115f59ba41a321907d2974f77, type: 3}
+  imgPlayer2: {fileID: 2800000, guid: f58cdf188de8659459646f44fb286d95, type: 3}
 --- !u!1 &771745750
 GameObject:
   m_ObjectHideFlags: 0
