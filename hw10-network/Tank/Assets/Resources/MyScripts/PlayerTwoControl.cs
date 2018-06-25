@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
-public class PlayerTwoControl : MonoBehaviour
+public class PlayerTwoControl : NetworkBehaviour
 {
 
     private GameObject player;
@@ -19,6 +20,9 @@ public class PlayerTwoControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!isLocalPlayer)
+            return;
+
         //先获得movement，再依次改变方向和进行运动
         //if为了避免不运动会一直向前看的情况
         if (Input.GetAxis("HorizontalPlayer2") != 0 || Input.GetAxis("VerticalPlayer2") != 0)

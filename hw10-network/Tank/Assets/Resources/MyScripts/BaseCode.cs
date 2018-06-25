@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public class Director : System.Object
 {
@@ -42,31 +43,36 @@ public interface IUserAction
 }
 
 //bullet挂载类
-public class BulletControl : MonoBehaviour
+public class BulletControl : NetworkBehaviour
 {
     void OnCollisionEnter(Collision collision)
-    {        
+    {
+        var playerCtrl = collision.gameObject.GetComponent<PlayerControl>();
+        var gui = collision.gameObject.GetComponent<UserGUI>();
+
         if (collision.gameObject.tag == "AIHome")
         {
-            Singleton<GameEventManager>.Instance.AIHome();
+            gui.CmdChange(1);
+
         }
-        else if(collision.gameObject.tag=="PlayerHome")
+        else if (collision.gameObject.tag == "PlayerHome")
         {
-            Singleton<GameEventManager>.Instance.PlayerHome();
+            gui.CmdChange(2);
         }
         else if (collision.gameObject.tag == "Player")
         {
-            Singleton<GameEventManager>.Instance.PlayerHit();
+            playerCtrl.RpcHit();
         }
         else if (collision.gameObject.tag == "AI")
         {
-            Singleton<GameEventManager>.Instance.AIHit();
+            playerCtrl.RpcHit();
         }
 
         //delete bullet
         //Debug.Log("bulletdie: " + collision.gameObject.name);
         Singleton<BulletFactory>.Instance.RemoveBullet(this.gameObject);
     }
+
 }
 
 //单例类

@@ -12,14 +12,14 @@ public class BulletFactory : MonoBehaviour
         bulletList = new List<GameObject>();
     }
 
-    public void FireBullet(Vector3 pos, Vector3 des)
+    public GameObject FireBullet(Vector3 pos, Vector3 des)
     {
         pos.y = 1.68f;
         GameObject bullet = Instantiate(Resources.Load("MyPrefabs/Shell", typeof(GameObject)), pos, Quaternion.identity, null) as GameObject;
         bullet.transform.forward = des;
         BulletControl bulletScript = bullet.gameObject.AddComponent<BulletControl>() as BulletControl;
         bulletList.Add(bullet);
-        return;
+        return bullet;
     }
 
     void Update()
