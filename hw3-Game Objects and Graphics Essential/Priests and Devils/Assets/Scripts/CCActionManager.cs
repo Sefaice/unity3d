@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
+
+// 继承SSActionManager并加入场记，需要挂在在主object上
+// 动作管理器的外部接口。调用时只需要告诉动作管理器目的地和对象即可
 public class CCActionManager : SSActionManager
 {
     public FirstController sceneController;

@@ -37,7 +37,7 @@ public interface ISceneController
     void LoadResources();
 }
 
-//IUserAction
+// IUserAction，用户触发的逻辑事件
 public interface IUserAction
 {
     void PriestClicked(int priestID);
@@ -538,7 +538,7 @@ public class BoatManager
     }
 }
 
-    public class CoastManager
+public class CoastManager
 {
     GameObject coastRight;
     GameObject coastLeft;

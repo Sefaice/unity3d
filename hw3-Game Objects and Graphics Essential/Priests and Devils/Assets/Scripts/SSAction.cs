@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// 基本动作类
 public class SSAction : ScriptableObject {
 
     public bool enable = true;
@@ -38,6 +39,8 @@ public interface ISSActionCallback
     void actionDone(SSAction source);
 }
 
+
+// 通过目的地和速度创建移动的action，CCMoveToAction，继承SSAction
 public class CCMoveToAction : SSAction
 {
     public Vector3 traget;
@@ -63,7 +66,7 @@ public class CCMoveToAction : SSAction
     }
 }
 
-
+// action管理类
 public class SSActionManager : MonoBehaviour, ISSActionCallback
 {
     private Dictionary<int, SSAction> actions = new Dictionary<int, SSAction>();
@@ -112,6 +115,7 @@ public class SSActionManager : MonoBehaviour, ISSActionCallback
     {
     }
 
+    // 用于判断是否有其他动作在运行，最终在场记的点击事件中调用
     public bool Empty()
     {
         if (actions.Count == 0)
