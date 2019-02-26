@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// 单例的director，继承System.Object而不会被unity进行内存管理
 public class Director : System.Object
 {
-
     private static Director _instance;
 
     public ISceneController currentSceneController { get; set; }
@@ -31,13 +31,13 @@ public class Director : System.Object
     }
 }
 
-//ISceneController
+// 接口ISceneController
 public interface ISceneController
 {
     void LoadResources();
 }
 
-//IUserAction
+// 接口IUserAction
 public interface IUserAction
 {
     void PriestClicked(int priestID);
@@ -49,7 +49,7 @@ public interface IUserAction
 
 /*---------------------------------------------movable gameobjects---------------------------------------------*/
 
-//挂在object上控制移动
+// 挂在object上控制移动的类
 public class MoveControl : MonoBehaviour
 {
     private int status=0;
@@ -506,7 +506,7 @@ public class BoatManager
     }
 }
 
-    public class CoastManager
+public class CoastManager
 {
     GameObject coastRight;
     GameObject coastLeft;
