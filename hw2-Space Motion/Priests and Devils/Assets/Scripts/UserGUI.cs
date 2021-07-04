@@ -2,33 +2,53 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UserGUI : MonoBehaviour {
+public class UserGUI : MonoBehaviour
+{
 
     IUserAction action;
 
-    public int life;//1 alive, 0 die, 2 win
+    private int life;//1 alive, 0 die, 2 win
+    string str = "Start";
+    private int score;
+    public int round;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start()
+    {
         action = Director.getInstance().currentSceneController as IUserAction;
-        life = 1;
-	}
+        score = 0;
+    }
 
     void OnGUI()
     {
-        if (GUI.Button(new Rect((Screen.width - 80) / 2-60, (Screen.height - 280) / 2 + 30, 80, 50), "Restart"))
+
+        if (GUI.Button(new Rect((Screen.width) / 2 - 350, Screen.height/2-90, 80, 50), str))
         {
-            life = 1;
-            action.Restart();
+            if (str == "Start")
+            {
+                action.GameStart();
+                str = "ReStart";
+            }
+            else
+            {
+                action.ReStart();
+            }
         }
-        if (life == 0)
+        if (score >= 0)
         {
-            GUI.Button(new Rect((Screen.width - 80) / 2 + 60, (Screen.height - 280) / 2 + 30, 80, 50), "Die!");
+            string roundStr = "round " + round;
+            GUI.Button(new Rect((Screen.width ) / 2 - 350, Screen.height / 2, 80, 50), roundStr);
         }
-        if (life == 2)
+        if (score < 0)
         {
-            GUI.Button(new Rect((Screen.width - 80) / 2 + 60, (Screen.height - 280) / 2 + 30, 80, 50), "You Win!");
+            GUI.Button(new Rect((Screen.width) / 2-350, Screen.height/2, 80, 50), "Die!");
         }
+        GUI.Button(new Rect((Screen.width) / 2-350 , Screen.height/2+90, 80, 50), score.ToString());
+    }
+    
+    public void UpdateScore(int _score)
+    {
+        score = _score;
     }
 
 }

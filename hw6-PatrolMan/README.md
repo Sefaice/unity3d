@@ -9,6 +9,7 @@ Github地址: https://github.com/Sefaice/unity3d/tree/master/hw6-PatrolMan
 游戏建议打开分辨率: 1024*768 windowed
 
 ### 控制人物移动
+
 Input.GetAxis("Horizontal")是x方向输入，和transform中position的x一样，即左右方向，返回值负数代表x反方向，Input.GetAxis("Vertical")值z方向，即前后方向
 
 为了达到每次运动任务都看向运动方向的效果，使用movement先得到运动方向，再先旋转朝向这个方向，再进行运动，玩家控制的任务和巡逻兵的移动方向都是这样每次先朝向运动终点
@@ -19,13 +20,15 @@ transform.Translate(movement * player_speed * Time.deltaTime, Space.World);
 ```
 
 ### 动画
+
 solider和zombie的动画都使用资源预制中的动画，建立一个向量机，基本都是静止——运动——攻击/死亡这几个动画，加入变量进行控制即可
 
 animator-transition中的has exit time选项取消勾选，就可以在动画状态之间无缝切换，否则这个例子中的走和停的动画不会马上触发
 
-
 ### 碰撞
+
 碰撞是由collider+rigidbody属性产生的，rigidbod可以让物体受(重)力，一个有collider和rigidbody的物体会碰撞另一个只要有collider的物体
+
 ```
 public class ColliderScript : MonoBehaviour
 {
@@ -54,11 +57,13 @@ public class ColliderScript : MonoBehaviour
     OnTriggerStay(){}
 }
 ```
-对于碰撞事件，OncollisionEnter（）在此对象进入另一个物体时触发，OnTriggerEnter（）在对象被进入时触发，对应的三个函数分别是进入、退出、每帧调用,传入的参数是碰撞物体的信息
+
+对于碰撞事件，`OncollisionEnter()`在此对象进入另一个物体时触发，`OnTriggerEnter()`在对象被进入时触发，对应的三个函数分别是进入、退出、每帧调用,传入的参数是碰撞物体的信息
 
 rigidbody中isKinematic选项选中后，物体只会有运动学属性，没有碰撞作用
 
 ### 巡逻兵移动
+
 因为需要巡逻兵不断地走凸多边形，第一个要解决的问题就是怎么实现每一段直线运动后紧接着下一段运动并且循环往复
 
 在zombiemanager中可以构造执行每一段运动的函数，但是调用需要在actionmanager中进行；以前用到的actionmanager动作管理器中动作有执行完的回调接口，但是接口的参数并不是我想要的zombiemanager，所以需要在父级的actionmanager中加入zombiemanager这个元素，我初始的想法是：
@@ -164,9 +169,10 @@ protected void Update()
 }
 ```
 
-**动作管理器到底有什么样的职责范围，如这次遇到的运动要怎么分配？**
+**动作管理器到底有什么样的职责范围，如这次遇到的运动要怎么分配？** - 判断僵尸状态应该用地图上门的碰撞盒实现。
 
 ### 订阅与发布模式
+
 这次作业最难的部分。使用此模式的目的是方便分离组件的耦合，如在一个庞大的游戏中，成千上万的玩家每个人完成一个任务后都需要向系统报告，如果发放奖励的代码分散在每个玩家的身上，游戏很难维护并且繁琐，使用这个模式下，每一个玩家都是发布者，游戏服务器是订阅者，这样每次一个玩家完成后就可以让服务器收到信息，进行处理。
 
 在此游戏中，场记（firstSceneController）就是订阅者，定义的订阅事件类就是发布者，在场记初始化时订阅这些事件，这样在玩家出现如逃脱、死亡的事件后就能让场记收到消息，并且可以很方便地扩展。
@@ -199,10 +205,13 @@ public class GameEventManager : MonoBehaviour
     }
 }
 ```
-在这些方法出现时，调用即可通知订阅者
+
+场记把Escape和GameOver函数分别初始化为委托的实例（即这两个函数订阅了事件），当事件发生时就通过delegate调用这两个函数
 
 ### 其余
+
 剩下部分如单例模式、工厂模式、gui等问题比较简单
 
 ### 思考
+
 unity项目代码非常多，结构很复杂，所以能很好地学到设计模式和项目规划，如这次的订阅发布，真正打一个这样的项目才能理解

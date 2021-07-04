@@ -588,7 +588,7 @@ public class CoastManager
     {
         if (_priest.GetPriestLocation() == 0)
         {
-            if (_priest.GetPriestPosition().x  == 3) rightPriestSeats[0] = 0;
+            if (_priest.GetPriestPosition().x == 3) rightPriestSeats[0] = 0;
             if (_priest.GetPriestPosition().x == 3.6f) rightPriestSeats[1] = 0;
             if (_priest.GetPriestPosition().x == 4.2f) rightPriestSeats[2] = 0;
         }

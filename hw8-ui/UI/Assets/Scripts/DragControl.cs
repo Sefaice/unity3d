@@ -11,15 +11,17 @@ public class DragControl : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
     public GameObject bag;
     public GameObject storage;
 
-    private GameObject item;
+    private Transform item;
     private Vector3 oldPosition;
+    private string oldDir;
+
     //private Vector3 offset;
-    private GameObject newItem;
+    private Transform newItem;
     private Vector3 newPosition;
+    private string newDir;
 
-    public GraphicRaycaster m_CanvasUI;
-    public EventSystem eventSystem;
-
+    //public GraphicRaycaster m_CanvasUI;
+    //public EventSystem eventSystem;
 
     void Start()
     {
@@ -31,52 +33,88 @@ public class DragControl : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     public void OnBeginDrag(PointerEventData data)
     {
-        //Debug.Log("begindrag: " + data.pointerDrag);
-        item = data.pointerEnter;
-        oldPosition = item.transform.position;
-        //offset = item.transform.position - Input.mousePosition;
-        //拖动的物体处于最上层
-        //item.transform.SetAsLastSibling();
+        item = data.pointerEnter.transform.GetChild(0); // image
+        //Debug.Log("begindrag: " + item.name);
+        oldPosition = item.position;
+        oldDir = item.parent.parent.gameObject.name;
+        ////拖动的物体处于最上层
+        //item.layer = 9;
     }
 
     public void OnDrag(PointerEventData data)
     {
-        //Debug.Log("dragging: " + data.pointerDrag);
-        if(item!=null && item.name!="Bag" && item.name!="Storage")
+        // Debug.Log("dragging: " + data.pointerDrag);
+        if (item!=null)
         {
             Vector3 pos = Input.mousePosition;
             //自己试着转换一直不对，抄了博客中的转换方法，好像log出来鼠标的坐标没有加上ui相机的-250
             Vector3 mmp = camera.ScreenToWorldPoint(pos + new Vector3(0, 0, 250));
-            item.transform.position = new Vector3(mmp.x, mmp.y, 0);
+            item.position = new Vector3(mmp.x, mmp.y, 0);
             //防止拖动过程中旋转
-            item.transform.eulerAngles = new Vector3(0, 0, 0);
+            item.eulerAngles = new Vector3(0, 0, 0);
         }
     }
 
     public void OnEndDrag(PointerEventData data)
     {
-        //交换位置
-        //Debug.Log(data.pointerEnter);
-        if (false)
+        
+        // Debug.Log(data.pointerEnter);
+        
+        if (data.pointerEnter != null)
         {
-            newItem = data.pointerEnter;
-            newPosition = newItem.transform.position;
-            newItem.transform.position = oldPosition;
-            item.transform.position = newPosition;
-        }
-        else//放回原位
-        {
-            if (item.transform.parent.gameObject.name == "Bag")
+            newItem = data.pointerEnter.transform.GetChild(0);
+            newDir = newItem.parent.parent.gameObject.name;
+
+            if (newDir != oldDir) // 交换位置
             {
-                item.transform.position = oldPosition;
-                item.transform.eulerAngles = bag.transform.eulerAngles;
+                newPosition = newItem.position;
+                newItem.position = oldPosition;
+                item.position = newPosition;
+
+                //// get index
+                //int newIndex = newItem.transform.GetSiblingIndex();
+                //int oldIndex = item.transform.GetSiblingIndex();
+
+                // change parent
+                Transform newParent = newItem.parent;
+                newItem.parent = item.parent;
+                item.parent = newParent;
+
+                //// set correct index
+                //newItem.transform.SetSiblingIndex(oldIndex);            
+                //item.transform.SetSiblingIndex(newIndex);
+            }
+            else // 放回原位
+            {
+                if (oldDir == "Bag")
+                {
+                    item.position = oldPosition;
+                    item.eulerAngles = bag.transform.eulerAngles;
+                }
+                else
+                {
+                    item.position = oldPosition;
+                    item.eulerAngles = storage.transform.eulerAngles;
+                }
+            }
+        }
+        else // 放回原位
+        {
+            if (oldDir == "Bag")
+            {
+                item.position = oldPosition;
+                item.eulerAngles = bag.transform.eulerAngles;
             }
             else
             {
-                item.transform.position = oldPosition;
-                item.transform.eulerAngles = storage.transform.eulerAngles;
+                item.position = oldPosition;
+                item.eulerAngles = storage.transform.eulerAngles;
             }
         }
+
+
+        // Debug.Log(newItem.transform.position);
+
         item = null;
         oldPosition = new Vector3();
         newItem = null;

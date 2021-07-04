@@ -27,6 +27,6 @@ public class BagWindow : MonoBehaviour
         transform.localRotation = mStart * Quaternion.Euler(-rot.y * range.y, rot.x * range.x, 0f);
         */
         //鼠标x方向偏差确定沿y轴旋转角度，y方向决定沿x轴旋转
-        transform.eulerAngles = new Vector3(5 * y, -45 * x, 0);
+        transform.eulerAngles = new Vector3(.5f * y, -4.5f * x, 0);
     }
 }

@@ -49,8 +49,8 @@ public class FirstController : MonoBehaviour, ISceneController, IUserAction
 
     public void Start()
     {
-        GameEventManager.myPlayerEscapeEvent += Escape;
-        GameEventManager.myGameOverEvent += GameOver;
+        GameEventManager.myPlayerEscapeEvent += Escape; // 注册delegate，Escape 'subscribe' the myPlayerEscapeEvent
+        GameEventManager.myGameOverEvent += GameOver; // GameOver 'subscribe' the myGameOverEvent
     }
 
     public void Escape()

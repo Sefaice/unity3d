@@ -20,7 +20,7 @@ public class StorageWindow : MonoBehaviour
         transform.localRotation = mStart * Quaternion.Euler(-rot.y * range.y, rot.x * range.x, 0f);
         */
         //鼠标x方向偏差确定沿y轴旋转角度，y方向决定沿x轴旋转
-        transform.eulerAngles = new Vector3(5 * y, -15 * x, 0);
+        transform.eulerAngles = new Vector3(0.5f * y, -1.5f * x, 0);
     }
 }
 

@@ -4,18 +4,12 @@ using UnityEngine;
 
 public class FirstController : MonoBehaviour, ISceneController, IUserAction
 {
-    PriestManager priest;
-    PriestManager priest1;
-    PriestManager priest2;
-    PriestManager priest3;
-    DevilManager devil;
-    DevilManager devil1;
-    DevilManager devil2;
-    DevilManager devil3;
-    CoastManager coast;
-    BoatManager boat;
+    private UserGUI gui;
+    private CCActionManager actionManager;
+    private DiskFactory diskFactory;
+    private int round;
 
-    UserGUI gui;
+    private int score;
 
     void Awake()
     {
@@ -24,139 +18,89 @@ public class FirstController : MonoBehaviour, ISceneController, IUserAction
         director.currentSceneController = this;//就是把firstcontroller可以被取到
         director.currentSceneController.LoadResources();
         gui = gameObject.AddComponent<UserGUI>() as UserGUI;
+        actionManager = gameObject.AddComponent<CCActionManager>() as CCActionManager;
 
-        priest1 = new PriestManager();
-        priest2 = new PriestManager();
-        priest3 = new PriestManager();
-        devil1 = new DevilManager();
-        devil2 = new DevilManager();
-        devil3 = new DevilManager();
-        coast = new CoastManager();
-        boat = new BoatManager();
+        diskFactory = Singleton<DiskFactory>.Instance;
+        round = 0;
     }
 
-    public void LoadResources()//只加载场景资源
+    public void LoadResources()
     {
-        GameObject water= UnityEngine.Object.Instantiate(Resources.Load("Prefabs/water", typeof(GameObject)), new Vector3(0, -0.25f, -4), Quaternion.identity, null) as GameObject;
+        GameObject ground = Instantiate(Resources.Load("Prefabs/Ground", typeof(GameObject)), new Vector3(0, 0, 0), Quaternion.identity, null) as GameObject;
     }
 
-    public void PriestClicked(int priestID)
+    public void GameStart()
     {
-        if (OnAnimation()==true)//on animation
-            return;
-        //find which object get clicked
-        if (priestID == 0) priest = priest1;
-        if (priestID == 1) priest = priest2;
-        if (priestID == 2) priest = priest3;
-   
-        if (priest.onBoat == 0)
-        {
-            if (priest.GetPriestLocation() == boat.GetBoatLocation())//和船在一边
-            {
-                if (boat.BoatEmpty() == true)//船上有空位
-                {
-                    boat.AddPriest(priest);
-                    coast.PriestGetOffCoast(priest);
-                }
-            }
-        }
-        else
-        {
-            boat.RemovePriest(priest);
-            coast.PriestGetOnCoast(priest);
-        }
+        InvokeRepeating("SendDisk", 1, 1.2f);//3s per disk
+        diskFactory.GameStart();
+        score = 0;
+        round = 1;
     }
 
-    public void DevilClicked(int devilID)
+    public void ReStart()
     {
-        if (OnAnimation() == true)
-            return;
-        if (devilID == 0) devil = devil1;
-        if (devilID == 1) devil = devil2;
-        if (devilID == 2) devil = devil3;
-
-        if (devil.onBoat == 0)//get on board
-        {
-            if (devil.GetDevilLocation() == boat.GetBoatLocation())//和船在一边
-            {
-                if (boat.BoatEmpty() == true)//船上有空位
-                {
-                    boat.AddDevil(devil);
-                    coast.DevilGetOffCoast(devil);
-                }
-            }
-        }
-        else
-        {
-            boat.RemoveDevil(devil);
-            coast.DevilGetOnCoast(devil);
-        }
+        diskFactory.GameStart();
+        score = 0;
+        round = 1;
     }
 
-    public void BoatClicked()
+    public void SendDisk()
     {
-        if (OnAnimation() == true)
-            return;
-        boat.MoveBoat();
-    }
-
-    private bool OnAnimation()
-    {
-        if (priest1.GetStatus() == 1 || priest2.GetStatus() == 1 || priest3.GetStatus() == 1)
-            return true;
-        if (devil1.GetStatus() == 1 || devil2.GetStatus() == 1 || devil3.GetStatus() == 1)
-            return true;
-        if (boat.GetStatus()==1)
-            return true;
-        return false;
-    }
-
-    void checkGameOver()
-    {
-        if (OnAnimation() == true)
-            return;
-        int right = coast.GetRightCoastPriestNum() - coast.GetRightCoastDevilNum();
-        int left = coast.GetLeftCoastPriestNum() - coast.GetLeftCoastDevilNum();
-        int rightPriest = coast.GetRightCoastPriestNum();
-        int leftPriest = coast.GetLeftCoastPriestNum();
-        if (boat.GetBoatLocation() == 0)//right
-        {
-            right += boat.GetBoatPriestNum() - boat.GetBoatDevilNum();
-            rightPriest += boat.GetBoatPriestNum();
-        }
-        else
-        {
-            left += boat.GetBoatPriestNum() - boat.GetBoatDevilNum();
-            leftPriest += boat.GetBoatPriestNum();
-        }
-        if (right < 0 && rightPriest > 0)
-        {
-            gui.life = 0;
-        }
-        if (left< 0 && leftPriest > 0)
-        {
-            gui.life = 0;
-        }
-        if(coast.GetLeftCoastDevilNum()==3 && coast.GetLeftCoastPriestNum() == 3)
-        {
-            gui.life = 2;
-        }
-    }
+        actionManager.MoveUFO(diskFactory.GetDisk(round));
+    }  
 
     void Update()
     {
-        checkGameOver();
-    }
+        /*float translationY = Input.GetAxis("Vertical") * 5;
+        float translationX = Input.GetAxis("Horizontal") * 5;
+        translationY *= Time.deltaTime;
+        translationX *= Time.deltaTime;
+        transform.Translate(translationX, translationY, 0);*/
+        if (Input.GetButtonDown("Fire1"))
+        {
+            //Debug.Log("Fired Pressed");
+            //Debug.Log(Input.mousePosition);
 
-    public void Restart()
-    {
-        priest1.Reset();
-        priest2.Reset();
-        priest3.Reset();
-        devil1.Reset();
-        devil2.Reset();
-        devil3.Reset();
-        coast.Reset();
-        boat.Reset();
+            Vector3 mp = Input.mousePosition; //get Screen Position
+
+            //create ray, origin is camera, and direction to mousepoint
+            Camera ca = Camera.main; //cam.GetComponent<Camera> ();
+            Ray ray = ca.ScreenPointToRay(Input.mousePosition);
+
+            //Return the ray's hit
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit))
+            {
+                GameObject ufoHitted = hit.transform.gameObject;
+                //Debug.Log(ufoHitted.name);
+                //Debug.Log(ufoHitted.GetComponent<Renderer>().material.color==Color.black);
+                //Destroy(hit.transform.gameObject);
+                if(ufoHitted.GetComponent<Renderer>().material.color == Color.black)
+                {
+                    score++;
+                }
+                else
+                {
+                    score += 2;
+                }
+                diskFactory.FreeDisk(ufoHitted.GetComponent<UFOScript>().manager);
+                ufoHitted.SetActive(false);
+            }
+        }
+
+        //update scorefrom factory for unhitted disks
+        score -= diskFactory.GetUnhittedNum();
+        gui.UpdateScore(score);
+        if (score >= 10 && round==1)
+        {
+            round = 2;
+        }
+        if (round >= 20 && round==2)
+        {
+            round = 3;
+        }
+        gui.round = round;
     }
+     
+	
 }
