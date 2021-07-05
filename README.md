@@ -58,6 +58,3 @@ https://gameinstitute.qq.com/community/detail/120064
 MVC降低了模块耦合，模块间通信变得困难，观察者模式可以用c#的delegate和event实现模块间通信。
 
 观察者模式中，场景控制器是订阅者，子组件是发布者，以此实现子组件向场记发送消息。比如人物碰撞出现时需要掉血，main controller需要修改数值，就可以通过这一模式发送消息。语法上，delegate&event将main controller需要订阅的函数进行注册，在事件发生时调用event。
-
-
-**todo： hw8 done**
